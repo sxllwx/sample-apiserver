@@ -1,0 +1,34 @@
+apiVersion: skaffold/v3
+kind: Config
+metadata:
+  name: khaos-apiserver-debug
+  labels:
+    owner: scottwang
+    project: khaos
+build:
+  # 需要推送，并且并行的搞
+  local:
+    push: true
+    concurrency: 0
+  tagPolicy:
+    inputDigest: {}
+  artifacts:
+  - image: ccr.ccs.tencentyun.com/cdb.khaos.platform/khaos-apiserver
+    #runtimeType: go
+    ko:
+     # 必须要监听443
+     fromImage: gcr.io/distroless/static:debug
+     #fromImage: gcr.io/distroless/base:debug-nonroot
+     main: ./
+     flags:
+      - -mod=vendor
+      - -v
+     env:
+     - GOPROXY={{.GOPROXY}}
+manifests:
+  rawYaml:
+      - ./artifacts/example/deployment.yaml
+deploy:
+  kubeContext: "khaos-integration"
+  logs:
+    prefix: "podAndContainer"

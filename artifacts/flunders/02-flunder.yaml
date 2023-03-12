@@ -1,0 +1,10 @@
+apiVersion: wardle.example.com/v1beta1
+kind: Flunder
+metadata:
+  name: scott-flunder
+  labels:
+    sample-label: "true"
+
+spec: 
+  flunderReference: scottwang
+  referenceType: Flunder

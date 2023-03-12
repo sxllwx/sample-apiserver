@@ -21,10 +21,9 @@ import (
 	"io"
 	"net"
 
-	"github.com/spf13/cobra"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/runtime/serializer/protobuf"
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"k8s.io/apiserver/pkg/admission"
 	"k8s.io/apiserver/pkg/endpoints/openapi"
@@ -32,9 +31,8 @@ import (
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	genericoptions "k8s.io/apiserver/pkg/server/options"
 	utilfeature "k8s.io/apiserver/pkg/util/feature"
-	"k8s.io/sample-apiserver/pkg/admission/plugin/banflunder"
-	"k8s.io/sample-apiserver/pkg/admission/wardleinitializer"
-	"k8s.io/sample-apiserver/pkg/apis/wardle/v1alpha1"
+	"k8s.io/sample-apiserver/pkg/apis/wardle"
+	v1beta1 "k8s.io/sample-apiserver/pkg/apis/wardle/v1beta1"
 	"k8s.io/sample-apiserver/pkg/apiserver"
 	clientset "k8s.io/sample-apiserver/pkg/generated/clientset/versioned"
 	informers "k8s.io/sample-apiserver/pkg/generated/informers/externalversions"
@@ -60,13 +58,13 @@ func NewWardleServerOptions(out, errOut io.Writer) *WardleServerOptions {
 	o := &WardleServerOptions{
 		RecommendedOptions: genericoptions.NewRecommendedOptions(
 			defaultEtcdPathPrefix,
-			apiserver.Codecs.LegacyCodec(v1alpha1.SchemeGroupVersion),
+			apiserver.Codecs.CodecForVersions(protobuf.NewSerializer(apiserver.Scheme, apiserver.Scheme), protobuf.NewSerializer(apiserver.Scheme, apiserver.Scheme), v1beta1.SchemeGroupVersion, wardle.SchemeGroupVersion),
 		),
 
 		StdOut: out,
 		StdErr: errOut,
 	}
-	o.RecommendedOptions.Etcd.StorageConfig.EncodeVersioner = runtime.NewMultiGroupVersioner(v1alpha1.SchemeGroupVersion, schema.GroupKind{Group: v1alpha1.GroupName})
+	o.RecommendedOptions.Etcd.StorageConfig.EncodeVersioner = runtime.NewMultiGroupVersioner(v1beta1.SchemeGroupVersion, schema.GroupKind{Group: v1beta1.GroupName})
 	return o
 }
 
@@ -108,10 +106,10 @@ func (o WardleServerOptions) Validate(args []string) error {
 // Complete fills in fields required to have valid data
 func (o *WardleServerOptions) Complete() error {
 	// register admission plugins
-	banflunder.Register(o.RecommendedOptions.Admission.Plugins)
+	//banflunder.Register(o.RecommendedOptions.Admission.Plugins)
 
 	// add admission plugins to the RecommendedPluginOrder
-	o.RecommendedOptions.Admission.RecommendedPluginOrder = append(o.RecommendedOptions.Admission.RecommendedPluginOrder, "BanFlunder")
+	//o.RecommendedOptions.Admission.RecommendedPluginOrder = append(o.RecommendedOptions.Admission.RecommendedPluginOrder, "BanFlunder")
 
 	return nil
 }
@@ -132,7 +130,7 @@ func (o *WardleServerOptions) Config() (*apiserver.Config, error) {
 		}
 		informerFactory := informers.NewSharedInformerFactory(client, c.LoopbackClientConfig.Timeout)
 		o.SharedInformerFactory = informerFactory
-		return []admission.PluginInitializer{wardleinitializer.New(informerFactory)}, nil
+		return []admission.PluginInitializer{}, nil
 	}
 
 	serverConfig := genericapiserver.NewRecommendedConfig(apiserver.Codecs)
