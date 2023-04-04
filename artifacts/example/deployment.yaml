@@ -22,7 +22,7 @@ spec:
         # or
         # docker pull registry.k8s.io/e2e-test-images/sample-apiserver:1.17.4
         # docker tag registry.k8s.io/e2e-test-images/sample-apiserver:1.17.4 kube-sample-apiserver:latest
-        image: ccr.ccs.tencentyun.com/cdb.khaos.platform/khaos-apiserver
+        image: sample-apiserver
         imagePullPolicy: Always
         args: [ "--etcd-servers=http://localhost:2379" ]
       - name: etcd

@@ -5,6 +5,7 @@ module k8s.io/sample-apiserver
 go 1.19
 
 require (
+	github.com/gogo/protobuf v1.3.2
 	github.com/google/gofuzz v1.1.0
 	github.com/spf13/cobra v1.6.0
 	k8s.io/apimachinery v0.0.0-20230303235435-f357b1fa74b7
@@ -36,7 +37,6 @@ require (
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.1 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/cel-go v0.12.6 // indirect

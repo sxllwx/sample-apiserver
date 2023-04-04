@@ -1,10 +1,10 @@
 apiVersion: skaffold/v3
 kind: Config
 metadata:
-  name: khaos-apiserver-debug
+  name: sample-apiserver-debug
   labels:
     owner: scottwang
-    project: khaos
+    project: k8s
 build:
   # 需要推送，并且并行的搞
   local:
@@ -13,7 +13,7 @@ build:
   tagPolicy:
     inputDigest: {}
   artifacts:
-  - image: ccr.ccs.tencentyun.com/cdb.khaos.platform/khaos-apiserver
+  - image: sample-apiserver
     #runtimeType: go
     ko:
      # 必须要监听443
@@ -29,6 +29,6 @@ manifests:
   rawYaml:
       - ./artifacts/example/deployment.yaml
 deploy:
-  kubeContext: "khaos-integration"
+  kubeContext: "integration"
   logs:
     prefix: "podAndContainer"
